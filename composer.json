@@ -1,0 +1,11 @@
+{
+    "name": "slaveofcode/notifyexception",
+    "description": "A PHP Exception Handler to Post Exceptions to a messaging app channel like Slack.",
+    "authors": [
+        {
+            "name": "zeandcode",
+            "email": "zeandcode@gmail.com"
+        }
+    ],
+    "require": {}
+}
