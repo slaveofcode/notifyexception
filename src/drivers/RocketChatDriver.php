@@ -20,4 +20,9 @@ class RocketChatDriver implements BaseDriver
     {
         return RocketChat::send($this->webhook, $message);
     }
+
+    public function getName()
+    {
+        return 'RocketChat';
+    }
 }

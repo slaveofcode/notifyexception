@@ -11,5 +11,6 @@ interface BaseDriver {
 
     public function configure($config);
     public function push($message);
+    public function getName();
 
 }

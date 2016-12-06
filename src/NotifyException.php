@@ -2,24 +2,25 @@
 
 namespace NotifyException;
 
-
+use Carbon\Carbon;
 use NotifyException\Drivers\RocketChatDriver;
 use NotifyException\Drivers\SlackDriver;
-
-require_once __DIR__ . 'vendor/autoload.php';
 
 
 class NotifyException extends \Exception
 {
     const CONFIG_NOTIFY_EXCEPTION_SLACK = 'NOTIFY_EXCEPTION_SLACK';
     const CONFIG_NOTIFY_EXCEPTION_ROCKETCHAT = 'NOTIFY_EXCEPTION_ROCKETCHAT';
+    private $exceptionMessage;
 
     public function __construct($message, $code = 0, \Exception $previous = null) {
+
+        $this->exceptionMessage = $message;
 
         if (defined(self::CONFIG_NOTIFY_EXCEPTION_SLACK) ||
             defined(self::CONFIG_NOTIFY_EXCEPTION_ROCKETCHAT)) {
 
-            $this->pushMessage($message);
+            $this->pushMessage($this->getTraceMessage());
 
         } else {
             error_log('NOTIFY_EXCEPTION: No configuration found, please set your config\r\n');
@@ -27,6 +28,21 @@ class NotifyException extends \Exception
 
         parent::__construct($message, $code, $previous);
 
+    }
+
+    protected function getTraceMessage()
+    {
+        $time = Carbon::now();
+        return <<<EOD
+Oops.. Some error happens
+
+> Time: `{$time}`
+> Exception: `{$this->exceptionMessage}`
+> File: `{$this->getFile()}`
+> Line: `{$this->getLine()}`
+> Trace: ```{$this->getTraceAsString()}```
+
+EOD;
     }
 
     private function getDriverInstance()
@@ -41,6 +57,7 @@ class NotifyException extends \Exception
             $drivers[] = (new SlackDriver)->configure([
                 'webhook' => $slackConfig['webhook'],
                 'channel' => $slackConfig['channel'],
+                'username' => $slackConfig['username'],
             ]);
 
         }
@@ -70,9 +87,10 @@ class NotifyException extends \Exception
 
             foreach ($drivers as $driver) {
                 $driver->push($message);
+                echo "Pushing {$driver->getName()}\n";
             }
 
-        } catch (\ErrorException $e) {
+        } catch (\Exception $e) {
             error_log('NOTIFY_EXCEPTION: Error to push the message\r\n');
             error_log('NOTIFY_EXCEPTION: \r\n');
             error_log($e->getMessage());
