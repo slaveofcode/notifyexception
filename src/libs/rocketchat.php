@@ -2,14 +2,18 @@
 
 namespace NotifyException\libraries;
 
-use Aws\CloudFront\Exception\Exception;
-
 class RocketChat
 {
-    public static function send($webhook, $message)
+    public static function send($webhook, $message, $attachments = NULL)
     {
 
-        $data = 'payload='.json_encode(['text' => $message]);
+        $payload = ['text' => $message];
+
+        if (!is_null($attachments)) {
+            $payload['attachments'] = $attachments;
+        }
+
+        $data = 'payload='.json_encode($payload);
 
         try{
             $ch = curl_init($webhook);

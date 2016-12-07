@@ -40,7 +40,8 @@ Oops.. Some error happens
 > Exception: `{$this->exceptionMessage}`
 > File: `{$this->getFile()}`
 > Line: `{$this->getLine()}`
-> Trace: ```{$this->getTraceAsString()}```
+> Trace: 
+```{$this->getTraceAsString()}```
 
 EOD;
     }
@@ -53,12 +54,17 @@ EOD;
             /* Get configuration for slack */
             $slackConfig = constant(self::CONFIG_NOTIFY_EXCEPTION_SLACK);
 
-            /* Get instance of driver */
-            $drivers[] = (new SlackDriver)->configure([
+            $config = [
                 'webhook' => $slackConfig['webhook'],
-                'channel' => $slackConfig['channel'],
-                'username' => $slackConfig['username'],
-            ]);
+                'channel' => $slackConfig['channel']
+            ];
+
+            if (isset($slackConfig['username'])) {
+                $config['username'] = $slackConfig['username'];
+            }
+
+            /* Get instance of driver */
+            $drivers[] = (new SlackDriver)->configure($config);
 
         }
 
@@ -66,10 +72,36 @@ EOD;
             /* Get configuration for chatlibs */
             $chatlibs_config = constant(self::CONFIG_NOTIFY_EXCEPTION_ROCKETCHAT);
 
+            $config = [
+                'webhook' => $chatlibs_config['webhook']
+            ];
+
+            if (isset($chatlibs_config['title']) ||
+                isset($chatlibs_config['title_link']) ||
+                isset($chatlibs_config['image_url'])) {
+
+                $attachments = [];
+
+                if (isset($chatlibs_config['title'])) {
+                    $attachments['title'] = $chatlibs_config['title'];
+                }
+
+                if (isset($chatlibs_config['title_link'])) {
+                    $attachments['title_link'] = $chatlibs_config['title_link'];
+                }
+
+                if (isset($chatlibs_config['image_url'])) {
+                    $attachments['image_url'] = $chatlibs_config['image_url'];
+                }
+
+                if (count($attachments) > 0) {
+                    $config['attachments'] = [$attachments];
+                }
+
+            }
+
             /* Get instance of driver */
-            $drivers[] = (new RocketChatDriver)->configure([
-                'webhook' => $chatlibs_config['webhook'],
-            ]);
+            $drivers[] = (new RocketChatDriver)->configure($config);
 
         }
 
