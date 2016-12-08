@@ -52,7 +52,7 @@ EOD;
 
         if (defined(self::CONFIG_NOTIFY_EXCEPTION_SLACK)) {
             /* Get configuration for slack */
-            $slackConfig = constant(self::CONFIG_NOTIFY_EXCEPTION_SLACK);
+            $slackConfig = unserialize(constant(self::CONFIG_NOTIFY_EXCEPTION_SLACK));
 
             $config = [
                 'webhook' => $slackConfig['webhook'],
@@ -70,7 +70,7 @@ EOD;
 
         if (defined(self::CONFIG_NOTIFY_EXCEPTION_ROCKETCHAT)) {
             /* Get configuration for chatlibs */
-            $chatlibs_config = constant(self::CONFIG_NOTIFY_EXCEPTION_ROCKETCHAT);
+            $chatlibs_config = unserialize(constant(self::CONFIG_NOTIFY_EXCEPTION_ROCKETCHAT));
 
             $config = [
                 'webhook' => $chatlibs_config['webhook']
