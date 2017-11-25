@@ -1,12 +1,12 @@
-#NotifyException for PHP
+# NotifyException for PHP
 A PHP Exception Handler to Post Exceptions to a messaging app channel like Slack.
 
 
-##Currently supported messaging app
+## Currently supported messaging app
  - Slack (slack.com)
  - RocketChat (rocket.chat)
  
-##Installation
+## Installation
 Install with composer
 
     composer require slaveofcode/notifyexception
